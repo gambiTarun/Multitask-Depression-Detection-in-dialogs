@@ -80,10 +80,10 @@ class DialogReader(DatasetReader):
         #return train, dev and test. each instance (1 dialog) is in a zipped list
         insts_train, insts_dev, insts_test = [], [], []
 
-        in_topic = open(F_TOPIC, 'r')
-        in_emo = open(F_EMO, 'r')
-        in_act = open(F_ACT, 'r')
-        in_dial = open(F_TEXT, 'r')
+        in_topic = open(F_TOPIC, 'r', encoding="utf8")
+        in_emo = open(F_EMO, 'r', encoding="utf8")
+        in_act = open(F_ACT, 'r', encoding="utf8")
+        in_dial = open(F_TEXT, 'r', encoding="utf8")
 
         for line_count, (line_dial, line_emo, line_act, line_topic) in enumerate(zip(in_dial, in_emo, in_act, in_topic)):
             inst = [[], [], [], []] #initiate an instance for each dialogue, sub-lists are text, speech act, emotion, topic

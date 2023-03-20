@@ -130,14 +130,22 @@ class HierarchicalClassification(Model, FromParams):
             output_dict["loss_emo"] = self.loss_emo 
             if not set(label_emo.tolist()[0]) == {-1}:
                 self.accuracy_emo(logits_emo, label_emo)
-                self.f1_emo(predictions=logits_emo, gold_labels=label_emo) #need to mask , mask=mask[:,:,0]
+                # print(label_emo)
+                # m=torch.Tensor((label_emo >= 0).float())
+                
+                # num_tokens = int(torch.sum(mask).data[0])
+                # print(logits_emo)
+                # #pick the values corresponding to labels and multiply by mask
+                # outputs = logits_emo[range(logits_emo.shape[0]), label_emo]*m
+                # print(outputs)
+                self.f1_emo(predictions=logits_emo, gold_labels=label_emo, mask = mask[:,:,0]) #need to mask , mask=mask[:,:,0]
         
         if self.has_act:
             self.loss_act = self._loss_act(logits_act.view(-1, 4), label_act.long().view(-1))
             output_dict["loss_act"] = self.loss_act
             if not set(label_act.tolist()[0]) == {-1}:
                 self.accuracy_act(logits_act, label_act)
-                self.f1_act(predictions=logits_act, gold_labels=label_act) #need to mask?
+                self.f1_act(predictions=logits_act, gold_labels=label_act, mask=mask[:,:,0]) #need to mask?
 
         if self.has_topic:
             self.loss_topic = self._loss_topic(logits_topic.view(-1, 10), label_topic.long().view(-1))
@@ -147,6 +155,8 @@ class HierarchicalClassification(Model, FromParams):
                 self.f1_topic(predictions=logits_topic, gold_labels=label_topic)
 
         if self.has_phq:
+            print(logits_phq.shape)
+            print(label_phq.shape)
             self.loss_phq = self._loss_phq(logits_phq.view(-1, 2), label_phq.long().view(-1))
             output_dict["loss_phq"] = self.loss_phq
             if not set(label_phq.tolist()) == {-1}:
