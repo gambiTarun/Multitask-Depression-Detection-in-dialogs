@@ -113,30 +113,27 @@ def build_trainer(
 def run_training_loop(params: dict, outf: str=None, serialdir: str='savedmodel', config:str=''
     ):
     
+    train_data, dev_data = None, None
+
     dataset_reader = build_dataset_reader(params)
 
-    train_data, dev_data = read_data(dataset_reader, outf, 'train-dev')
-    print("DEBUG2 :",len(train_data))
-    print("DEBUG2 :",len(dev_data))
+    if(params['use_existing_data']):
+        train_data = torch.load("train_data.data")
+        dev_data = torch.load("dev_data.data")
+    else:
+        train_data, dev_data = read_data(dataset_reader, outf, 'train-dev')
 
-    vocab = build_vocab(params, train_data)
-    print("DEBUG3")
-    model = build_model(vocab, params)
-    print("DEBUG4")
+        torch.save(train_data, "train_data.data")
+        torch.save(dev_data, "dev_data.data")
 
     train_loader, dev_loader = build_data_loaders(train_data, dev_data, batch_size=params['batchsize'])
-    print("DEBUG5")
 
-    train_loader.index_with(vocab)
-    print("DEBUG6")
-    dev_loader.index_with(model.vocab)
-    print("DEBUG7")
+    vocab = build_vocab(params, train_data)
+    model = build_model(vocab, params)
 
-    print("DEBUG8 :",len(train_loader.instances))
-    # print()
-    # print("DEBUG9 :",dev_loader.instances)
-
+    print("DEBUG1: building trainer")
     trainer = build_trainer(model, serialdir, train_loader, dev_loader, params)
+    print("DEBUG2: training trainer")
     metrics = trainer.train()
 
     config_file = os.path.join(serialdir, "config.json")
@@ -202,6 +199,7 @@ if __name__ == "__main__":
     parser.add_argument('--has_act', dest='has_act', default=False, action='store_true', help="predict speech act.")
     parser.add_argument('--has_phq', dest='has_phq', default=False, action='store_true', help="predict depression in daic, doc level")
     parser.add_argument('--has_phqbi', dest='has_phqbi', default=False, action='store_true', help="predict binarized depression level in daic")
+    parser.add_argument('--is_daic_else_erisk', dest='is_daic_else_erisk', default=False, action='store_true', help="if true use daic, else use erisk")
     parser.add_argument('--cuda', dest='cuda', default=-1, type=int, help='Choose cuda if available.')
     parser.add_argument('--batchsize', dest='batchsize', default=16, type=int, help='Param for dataloader, each time load n instance. By default=1.')
     parser.add_argument('--epoch', dest='epoch', default=1, type=int, help='Epoch for train. By default=1, suggest at least 10 while training.')
@@ -245,9 +243,11 @@ if __name__ == "__main__":
     params['lr'] = args.lr
     params['optimizer'] = args.optimizer
     params['orig_separation'] = args.orig_separation
+
     params['daic_resize'] = False
     params['del_ellie'] = True
-    params['daic_or_erisk'] = "erisk"
+    params['daic_or_erisk'] = "none" # daic" if args.is_daic_else_erisk else "erisk"
+    params['use_existing_data'] = True
 
 
     # check for cuda availability

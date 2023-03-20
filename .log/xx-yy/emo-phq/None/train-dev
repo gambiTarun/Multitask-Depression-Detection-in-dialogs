@@ -1,0 +1,29 @@
+PARAMS: 
+MODE: train-dev
+encode_turns: False
+use_bert: False
+bert_finetune: False
+has_emo: True
+has_act: True
+has_topic: True
+has_phq: True
+has_phqbi: False
+cuda: -1
+batchsize: 16
+epoch: 1
+lphq_coef: 1.0
+lemo_coef: 1.0
+lact_coef: 1.0
+ltopic_coef: 1.0
+turn_h: 128
+block_h: 256
+block_layer: 1
+dropout: 0.25
+lr: 0.001
+optimizer: Adam
+orig_separation: False
+daic_resize: False
+del_ellie: True
+daic_or_erisk: none
+use_existing_data: True
+

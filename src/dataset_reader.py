@@ -69,7 +69,7 @@ class DialogReader(DatasetReader):
             self.train1, self.dev1, self.test1 = self.load_dailydata()
         if self.daic_or_erisk=="daic":
             self.train2, self.dev2, self.test2 = self.load_daicdata()   
-        else:
+        elif self.daic_or_erisk=="erisk":
             self.train2, self.dev2, self.test2 = self.load_eriskdata()
 
         # print("DEBUG1: train1 len, ", len(self.train1))
@@ -253,13 +253,15 @@ class DialogReader(DatasetReader):
     def _read(self, file_path: str) -> Iterable[Instance]:
         # obtain train/dev/test datasets obtained from @load_dailydata
         # take related dataset and pass to @text_to_instance
+        print("DEBUG10: enter",file_path)
         if file_path == 'train':
             subset = self.combine_daic_daily_inst(self.train1, self.train2)
         elif file_path == 'dev':
             subset = self.combine_daic_daily_inst(self.dev1, self.dev2)
         elif file_path == 'test':
-            subset = self.combine_daic_daily_inst(self.test1, self.test2)      
-        for inst in subset: #[[seq],[spk],[emo_labels],[DA_labels],[topic_labels],[phq-9 scores]]
+            subset = self.combine_daic_daily_inst(self.test1, self.test2)  
+
+        for i,inst in enumerate(subset): #[[seq],[spk],[emo_labels],[DA_labels],[topic_labels],[phq-9 scores]]
             #upzip the tuples
             inst_text, spks, label_emo, label_da, label_topic, label_phq = inst
             inst_text2 = [] #tokenized turns in inst_text
@@ -268,7 +270,12 @@ class DialogReader(DatasetReader):
                     inst_text2.append(turn)
                 else:
                     inst_text2.append(self._tokenizer.tokenize(turn))
+
+            print(f"{i} of {len(subset)}", end='\r')
             yield self.text_to_instance(inst_text2, label_emo, label_da, label_topic, label_phq)
+
+        print("DEBUG10: exits",file_path)
+
 
     @overrides
     def text_to_instance(
