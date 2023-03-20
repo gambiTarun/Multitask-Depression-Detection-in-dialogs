@@ -246,8 +246,8 @@ if __name__ == "__main__":
 
     params['daic_resize'] = False
     params['del_ellie'] = True
-    params['daic_or_erisk'] = "none" # daic" if args.is_daic_else_erisk else "erisk"
-    params['use_existing_data'] = True
+    params['daic_or_erisk'] = "daic" if args.is_daic_else_erisk else "erisk"
+    params['use_existing_data'] = False
 
 
     # check for cuda availability

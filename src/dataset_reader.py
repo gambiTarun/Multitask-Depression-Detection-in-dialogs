@@ -146,7 +146,7 @@ class DialogReader(DatasetReader):
         list_final = []
         for label, classify in zip(subject_labels, dep_labels):
             final_seq,final_user=[],[]
-            for i in range(1,11):
+            for i in range(1,2):
                 folder='chunk'+str(i)
                 subject_name=label+'_'+str(i)
                 final_folder=ERISK_DIR+folder+'/'+subject_name+'.xml'
@@ -165,8 +165,6 @@ class DialogReader(DatasetReader):
                     texts=re.sub(' +', ' ', texts)
                     #perform contractions on the review
                     texts=contraction(texts)
-                    if texts==' ':
-                        continue
                     seq.append(texts)
                     user.append(label)
                 final_seq.extend(seq)
