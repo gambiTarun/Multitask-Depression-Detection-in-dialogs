@@ -155,13 +155,15 @@ class HierarchicalClassification(Model, FromParams):
                 self.f1_topic(predictions=logits_topic, gold_labels=label_topic)
 
         if self.has_phq:
-            print(logits_phq.shape)
-            print(label_phq.shape)
+            # print(logits_phq.shape)
+            # print(label_phq.shape)
             self.loss_phq = self._loss_phq(logits_phq.view(-1, 2), label_phq.long().view(-1))
             output_dict["loss_phq"] = self.loss_phq
             if not set(label_phq.tolist()) == {-1}:
                 self.accuracy_phq(logits_phq, label_phq)
                 self.f1_phq(predictions=logits_phq, gold_labels=label_phq)
+            # else:
+            #     self.l_phq_coef = 0
 
         if self.has_phq and self.has_emo and self.has_act and self.has_topic:
             output_dict["loss"] = self.l_emo_coef * self.loss_emo + self.l_phq_coef * self.loss_phq + self.l_topic_coef * self.loss_topic + self.l_act_coef * self.loss_act

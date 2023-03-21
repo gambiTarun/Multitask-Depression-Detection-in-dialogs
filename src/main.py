@@ -124,6 +124,7 @@ def run_training_loop(params: dict, outf: str=None, serialdir: str='savedmodel',
         train_data, dev_data = read_data(dataset_reader, outf, 'train-dev')
         torch.save(train_data, "train_data.data")
         torch.save(dev_data, "dev_data.data")
+
     vocab = build_vocab(params, train_data)
     model = build_model(vocab, params)
     train_loader, dev_loader = build_data_loaders(train_data, dev_data, batch_size=params['batchsize'])
@@ -248,8 +249,8 @@ if __name__ == "__main__":
 
     params['daic_resize'] = False
     params['del_ellie'] = True
-    params['daic_or_erisk'] = "daic" if args.is_daic_else_erisk else "erisk"
-    params['use_existing_data'] = True
+    params['daic_or_erisk'] = "erisk" #"daic" if args.is_daic_else_erisk else "erisk"
+    params['use_existing_data'] = False
 
 
     # check for cuda availability
