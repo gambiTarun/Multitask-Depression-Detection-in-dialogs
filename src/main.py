@@ -203,6 +203,7 @@ if __name__ == "__main__":
     parser.add_argument('--has_phq', dest='has_phq', default=False, action='store_true', help="predict depression in daic, doc level")
     parser.add_argument('--has_phqbi', dest='has_phqbi', default=False, action='store_true', help="predict binarized depression level in daic")
     parser.add_argument('--is_daic_else_erisk', dest='is_daic_else_erisk', default=False, action='store_true', help="if true use daic, else use erisk")
+    parser.add_argument('--use_existing_data', dest='use_existing_data', default=False, action='store_true', help="if true load saved")
     parser.add_argument('--cuda', dest='cuda', default=-1, type=int, help='Choose cuda if available.')
     parser.add_argument('--batchsize', dest='batchsize', default=16, type=int, help='Param for dataloader, each time load n instance. By default=1.')
     parser.add_argument('--epoch', dest='epoch', default=1, type=int, help='Epoch for train. By default=1, suggest at least 10 while training.')
@@ -249,8 +250,8 @@ if __name__ == "__main__":
 
     params['daic_resize'] = False
     params['del_ellie'] = True
-    params['daic_or_erisk'] = "erisk" #"daic" if args.is_daic_else_erisk else "erisk"
-    params['use_existing_data'] = False
+    params['daic_or_erisk'] = "daic" if args.is_daic_else_erisk else "erisk"
+    params['use_existing_data'] = args.use_existing_data
 
 
     # check for cuda availability

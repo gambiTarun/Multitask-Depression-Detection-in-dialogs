@@ -165,10 +165,14 @@ class DialogReader(DatasetReader):
                     texts=re.sub(' +', ' ', texts)
                     #perform contractions on the review
                     texts=contraction(texts)
+                    if texts==' ':
+                        continue
                     seq.append(texts)
                     user.append(label)
                 final_seq.extend(seq)
                 final_user.extend(user)
+            if final_seq==[]:
+                continue
             list_final.append([final_seq,final_user,[classify]])
 
         train_idx = int(len(list_final)*0.6)

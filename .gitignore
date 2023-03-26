@@ -2,4 +2,6 @@
 *.xml
 *.DS_Store
 *.data
+*.csv
+
 

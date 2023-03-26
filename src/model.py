@@ -138,32 +138,33 @@ class HierarchicalClassification(Model, FromParams):
                 # #pick the values corresponding to labels and multiply by mask
                 # outputs = logits_emo[range(logits_emo.shape[0]), label_emo]*m
                 # print(outputs)
-                self.f1_emo(predictions=logits_emo, gold_labels=label_emo, mask = mask[:,:,0]) #need to mask , mask=mask[:,:,0]
+                self.f1_emo(predictions=logits_emo, gold_labels=label_emo, mask = label_emo!=-1) #need to mask , mask=mask[:,:,0]
         
         if self.has_act:
             self.loss_act = self._loss_act(logits_act.view(-1, 4), label_act.long().view(-1))
             output_dict["loss_act"] = self.loss_act
             if not set(label_act.tolist()[0]) == {-1}:
                 self.accuracy_act(logits_act, label_act)
-                self.f1_act(predictions=logits_act, gold_labels=label_act, mask=mask[:,:,0]) #need to mask?
+                self.f1_act(predictions=logits_act, gold_labels=label_act, mask=label_act!=-1) #need to mask?
 
         if self.has_topic:
             self.loss_topic = self._loss_topic(logits_topic.view(-1, 10), label_topic.long().view(-1))
             output_dict["loss_topic"] = self.loss_topic
             if not set(label_topic.tolist()) == {-1}:
                 self.accuracy_topic(logits_topic, label_topic)
-                self.f1_topic(predictions=logits_topic, gold_labels=label_topic)
+                self.f1_topic(predictions=logits_topic, gold_labels=label_topic, mask=label_topic!=-1)
 
         if self.has_phq:
             # print(logits_phq.shape)
             # print(label_phq.shape)
             self.loss_phq = self._loss_phq(logits_phq.view(-1, 2), label_phq.long().view(-1))
-            output_dict["loss_phq"] = self.loss_phq
             if not set(label_phq.tolist()) == {-1}:
                 self.accuracy_phq(logits_phq, label_phq)
-                self.f1_phq(predictions=logits_phq, gold_labels=label_phq)
-            # else:
-            #     self.l_phq_coef = 0
+                self.f1_phq(predictions=logits_phq, gold_labels=label_phq, mask=label_phq!=-1)
+            else:
+                self.loss_phq = 0
+            
+            output_dict["loss_phq"] = self.loss_phq
 
         if self.has_phq and self.has_emo and self.has_act and self.has_topic:
             output_dict["loss"] = self.l_emo_coef * self.loss_emo + self.l_phq_coef * self.loss_phq + self.l_topic_coef * self.loss_topic + self.l_act_coef * self.loss_act

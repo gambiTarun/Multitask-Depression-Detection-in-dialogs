@@ -1,0 +1,80 @@
+{
+    "dataset_reader": {
+        "type": "dialog_reader",
+        "params": {
+            "daic_resize": false,
+            "del_ellie": true,
+            "encode_turns": false,
+            "has_act": false,
+            "has_emo": false,
+            "has_phq": true,
+            "has_phqbi": true,
+            "has_topic": false,
+            "orig_separation": false
+        },
+        "token_indexers": {
+            "tokens": {
+                "type": "single_id"
+            }
+        },
+        "tokenizer": {
+            "type": "spacy",
+            "language": "en_core_web_sm"
+        }
+    },
+    "model": {
+        "type": "hierarchical_classifier",
+        "block_encoder": {
+            "type": "gru",
+            "bidirectional": false,
+            "dropout": 0.25,
+            "hidden_size": 256,
+            "input_size": 256,
+            "num_layers": 1
+        },
+        "embedder": {
+            "token_embedders": {
+                "tokens": {
+                    "type": "embedding",
+                    "embedding_dim": 128
+                }
+            }
+        },
+        "params": {
+            "cuda": -1,
+            "has_act": false,
+            "has_emo": false,
+            "has_phq": true,
+            "has_phqbi": true,
+            "has_topic": false,
+            "lact_coef": 1.0,
+            "lemo_coef": 1.0,
+            "lphq_coef": 1.0,
+            "ltopic_coef": 1.0,
+            "use_bert": false
+        },
+        "turn_encoder": {
+            "type": "lstm",
+            "bidirectional": true,
+            "dropout": 0.25,
+            "hidden_size": 128,
+            "input_size": 128,
+            "num_layers": 1
+        }
+    },
+    "train_data_path": "train",
+    "validation_data_path": "dev",
+    "trainer": {
+        "cuda_device": -1,
+        "num_epochs": 1,
+        "optimizer": {
+            "type": "Adam",
+            "lr": 0.001
+        },
+        "patience": 5
+    },
+    "data_loader": {
+        "batch_size": 16,
+        "shuffle": true
+    }
+}
