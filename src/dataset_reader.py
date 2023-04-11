@@ -55,7 +55,7 @@ class DialogReader(DatasetReader):
         self.has_topic = params['has_topic']
         self.has_phq = params['has_phq']
         self.has_phqbi = params['has_phqbi']
-        self.daic_or_erisk = params['daic_or_erisk']
+        self.daic_or_erisk = 'erisk'
         # multilingual model, similar embeddings as the bert-base-nli-stsb-mean-token model, trained on 50+ lang
         self.turn_encoder = SentenceTransformer('stsb-xlm-r-multilingual') if self.encode_turns else None
         if params['orig_separation']:

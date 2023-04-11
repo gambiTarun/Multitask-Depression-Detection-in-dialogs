@@ -130,11 +130,11 @@ def run_training_loop(params: dict, outf: str=None, serialdir: str='savedmodel',
     train_loader, dev_loader = build_data_loaders(train_data, dev_data, batch_size=params['batchsize'])
     train_loader.index_with(vocab)
     dev_loader.index_with(model.vocab)
-    print("Debug111:", len(train_loader))
+    # print("Debug111:", len(train_loader))
 
-    print("DEBUG1: building trainer")
+    # print("DEBUG1: building trainer")
     trainer = build_trainer(model, serialdir, train_loader, dev_loader, params)
-    print("DEBUG2: training trainer")
+    # print("DEBUG2: training trainer")
     metrics = trainer.train()
 
 
@@ -158,7 +158,13 @@ def run_training_loop(params: dict, outf: str=None, serialdir: str='savedmodel',
 def run_test(model: Model, params: dict, outf: str) -> DataLoader:
     dataset_reader = build_dataset_reader(params)
 
-    train_data, dev_test_data = read_data(dataset_reader, outf, 'test')
+    if(params['use_existing_data']):
+        train_data = torch.load("train_data.data")
+        dev_test_data = torch.load("dev_test_data.data")
+    else:
+        train_data, dev_test_data = read_data(dataset_reader, outf, 'test')
+        torch.save(train_data, "train_data.data")
+        torch.save(dev_test_data, "dev_test_data.data")
 
     vocab = build_vocab(params, train_data)
 
