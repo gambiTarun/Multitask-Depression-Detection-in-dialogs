@@ -97,7 +97,7 @@ def original_separation():
     test = list(set(test))
     return train, dev, test
 
-
+import json
 def test_doc_res(pred_file: str, params: dict) -> str:
     has_emo = params['has_emo']
     has_act = params['has_act']
@@ -111,7 +111,7 @@ def test_doc_res(pred_file: str, params: dict) -> str:
     with open(pred_file, 'r') as instream:
         lines = instream.readlines() #each line is a dict with keys 'logits_turn','probs_turn'..."loss_turn","loss_block","loss_doc","loss"
         for l in lines:
-            data = ast.literal_eval(l)
+            data = json.loads(l)
             
             if has_emo:
                 gold_emo = data['label_emo']
