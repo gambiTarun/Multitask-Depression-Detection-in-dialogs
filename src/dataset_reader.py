@@ -7,6 +7,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from overrides import overrides
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 
 import pandas as pd
 import contractions,re,itertools
@@ -68,11 +69,14 @@ class DialogReader(DatasetReader):
         self.train2, self.dev2, self.test2 = None, None, None
         if self.has_emo or self.has_act or self.has_topic:
             self.train1, self.dev1, self.test1 = self.load_dailydata()
-        if self.daic_or_erisk=="daic":
-            self.train2, self.dev2, self.test2 = self.load_daicdata()   
-        elif self.daic_or_erisk=="erisk":
-            self.train2, self.dev2, self.test2 = self.load_eriskdata()
+        # if self.daic_or_erisk=="daic":
+        self.train_daic, self.dev_daic, self.test2 = self.load_daicdata()   
+        # elif self.daic_or_erisk=="erisk":
+        self.train_erisk, self.dev_erisk = self.load_eriskdata()
 
+        self.train2 = shuffle(self.train_daic + self.train_erisk)
+        self.dev2 = shuffle(self.dev_daic + self.dev_erisk)
+        
         # print("DEBUG1: train1 len, ", len(self.train1))
         # print("DEBUG1: train2 len, ", len(self.train2))
 
@@ -180,11 +184,11 @@ class DialogReader(DatasetReader):
         # dev_idx = int(len(list_final)*0.8)
         # insts_train, insts_dev, insts_test = list_final[:train_idx], list_final[train_idx:dev_idx], list_final[dev_idx:]
         
-        insts_train_dev, insts_test, _, _ = train_test_split(list_final, [i[2][0] for i in list_final], train_size=0.9, shuffle=True, stratify=None)
-        insts_train, insts_dev, _, _ = train_test_split(insts_train_dev, [i[2][0] for i in insts_train_dev], train_size=0.9, shuffle=True, stratify=None)
+        insts_train, insts_dev, _, _ = train_test_split(list_final, [i[2][0] for i in list_final], train_size=0.8, shuffle=True, stratify=None)
+        # insts_train, insts_dev, _, _ = train_test_split(insts_train_dev, [i[2][0] for i in insts_train_dev], train_size=0.9, shuffle=True, stratify=None)
 
-        print(len(insts_train), len(insts_dev), len(insts_test))
-        return insts_train, insts_dev, insts_test
+        print(len(insts_train), len(insts_dev))
+        return insts_train, insts_dev
 
     def load_daicdata(self) -> List[T]:
         # read transcripts in data/daic/, follow original separation into train, dev and test, return 3 lists
