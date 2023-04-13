@@ -6,6 +6,7 @@ from typing import Dict, List, Iterable, Tuple
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from overrides import overrides
+from sklearn.model_selection import train_test_split
 
 import pandas as pd
 import contractions,re,itertools
@@ -175,9 +176,12 @@ class DialogReader(DatasetReader):
                 continue
             list_final.append([final_seq,final_user,[classify]])
 
-        train_idx = int(len(list_final)*0.6)
-        dev_idx = int(len(list_final)*0.8)
-        insts_train, insts_dev, insts_test = list_final[:train_idx], list_final[train_idx:dev_idx], list_final[dev_idx:]
+        # train_idx = int(len(list_final)*0.6)
+        # dev_idx = int(len(list_final)*0.8)
+        # insts_train, insts_dev, insts_test = list_final[:train_idx], list_final[train_idx:dev_idx], list_final[dev_idx:]
+        
+        insts_train_dev, insts_test, _, _ = train_test_split(list_final, [i[2][0] for i in list_final], train_size=0.9, shuffle=True, stratify=None)
+        insts_train, insts_dev, _, _ = train_test_split(insts_train_dev, [i[2][0] for i in insts_train_dev], train_size=0.9, shuffle=True, stratify=None)
 
         print(len(insts_train), len(insts_dev), len(insts_test))
         return insts_train, insts_dev, insts_test
@@ -224,7 +228,7 @@ class DialogReader(DatasetReader):
 
 
     def combine_daic_daily_inst(self, insts1, insts2):
-        print("DEBUG9: in combine datasets")
+        # print("DEBUG9: in combine datasets")
         # inst1=daily, inst2=daic
         # combine info from these 2 instances, return an newinst with form: [[seq],[spk],[emo_labels],[DA_labels],[topic_labels],[phq-9 scores]]
         combinsts = []
@@ -248,14 +252,14 @@ class DialogReader(DatasetReader):
                 newinst[5] = inst[2][0]
                 combinsts.append(newinst)
 
-        print("DEBUG9: out of combine")
+        # print("DEBUG9: out of combine")
         return combinsts
         
     @overrides
     def _read(self, file_path: str) -> Iterable[Instance]:
         # obtain train/dev/test datasets obtained from @load_dailydata
         # take related dataset and pass to @text_to_instance
-        print("DEBUG10: enter",file_path)
+        # print("DEBUG10: enter",file_path)
         if file_path == 'train':
             subset = self.combine_daic_daily_inst(self.train1, self.train2)
         elif file_path == 'dev':
@@ -276,7 +280,7 @@ class DialogReader(DatasetReader):
             print(f"{i} of {len(subset)}", end='\r')
             yield self.text_to_instance(inst_text2, label_emo, label_da, label_topic, label_phq)
 
-        print("DEBUG10: exits",file_path)
+        # print("DEBUG10: exits",file_path)
 
 
     @overrides

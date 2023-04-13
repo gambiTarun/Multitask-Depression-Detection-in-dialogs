@@ -4,6 +4,8 @@ import ast
 import numpy as np
 import random
 import pandas as pd
+import disarray
+
 
 from constant import F_TOPIC, T_TRAIN, T_DEV, T_TEST, F_TEXT
 
@@ -239,79 +241,79 @@ def cal_f1(confmat, params):
     #@Emotion F1
     if has_emo:
         cm = np.array(cm_emo)
-        df = pd.DataFrame(cm, dtype=int) 
-        # macro and micro with all class
-        TP = np.diag(cm)
-        FP = np.sum(cm, axis=0) - TP
-        FN = np.sum(cm, axis=1) - TP
-        precision = np.divide(TP,(TP+FP))
-        recall = np.divide(TP,(TP+FN))
-        precision[np.isnan(precision)] = 0
-        precision[np.isinf(precision)] = 0
-        recall[np.isnan(recall)] = 0
-        recall[np.isinf(recall)] = 0
-        macro_rec = round((recall.sum()) / len(recall),4)
-        macro_pre = round((precision.sum()) / len(precision),4)
-        f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
-        TP = TP.sum()
-        FP = FP.sum()
-        FN = FN.sum()
-        micro_prec = TP / (TP+FP)
-        micro_reca = TP / (TP+FN)
-        micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
-        acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
-
-        # macro and micro without neutre
-        TP = np.diag(cm)
-        FP = np.sum(cm, axis=0) - TP
-        FN = np.sum(cm, axis=1) - TP
-        TP=TP[1:]
-        FP=FP[1:]
-        FN=FN[1:]
-        precision_wo = np.divide(TP,(TP+FP))
-        recall_wo = np.divide(TP,(TP+FN))
-        precision_wo[np.isnan(precision_wo)] = 0
-        precision_wo[np.isinf(precision_wo)] = 0
-        recall_wo[np.isnan(recall_wo)] = 0
-        recall_wo[np.isinf(recall_wo)] = 0
-        macro_rec_wo = round((recall_wo.sum()) / len(recall_wo),4)
-        macro_pre_wo = round((precision_wo.sum()) / len(precision_wo),4)
-        macro_f1_wo = 2 * macro_pre_wo * macro_rec_wo / (macro_rec_wo + macro_pre_wo)
-        TP_wo = TP.sum()
-        FP_wo = FP.sum()
-        FN_wo = FN.sum()
-        micro_prec_wo = TP_wo / (TP_wo+FP_wo)
-        micro_reca_wo = TP_wo / (TP_wo+FN_wo)
-        
-        micro_f1_wo = round(2*micro_prec_wo*micro_reca_wo / (micro_prec_wo+micro_reca_wo),4)
-        
-        ret.extend([f1, macro_pre, macro_rec, micro_f1, acc, macro_f1_wo, micro_f1_wo])
-
-        # df = pd.DataFrame(cm, dtype=int)        
+        # df = pd.DataFrame(cm, dtype=int) 
         # # macro and micro with all class
-        # macro_rec = round((df.da.recall.sum()) / len(df.da.recall),4)
-        # macro_pre = round((df.da.precision.sum()) / len(df.da.precision),4)
-        # # macro_f1 = round((df.da.f1.sum()) / len(df.da.f1),4) #df.da.f1 gives f1 for each class
+        # TP = np.diag(cm)
+        # FP = np.sum(cm, axis=0) - TP
+        # FN = np.sum(cm, axis=1) - TP
+        # precision = np.divide(TP,(TP+FP))
+        # recall = np.divide(TP,(TP+FN))
+        # precision[np.isnan(precision)] = 0
+        # precision[np.isinf(precision)] = 0
+        # recall[np.isnan(recall)] = 0
+        # recall[np.isinf(recall)] = 0
+        # macro_rec = round((recall.sum()) / len(recall),4)
+        # macro_pre = round((precision.sum()) / len(precision),4)
         # f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
-        # TP = df.da.TP.sum()
-        # FP = df.da.FP.sum()
-        # FN = df.da.FN.sum()
+        # TP = TP.sum()
+        # FP = FP.sum()
+        # FN = FN.sum()
         # micro_prec = TP / (TP+FP)
         # micro_reca = TP / (TP+FN)
         # micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
-        # # add accuracy
         # acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
 
         # # macro and micro without neutre
-        # macro_f1_wo = round(df.da.f1[1:].sum() / len(df.da.f1[1:]),4)
-        # TP_wo = df.da.TP[1:].sum()
-        # FP_wo = df.da.FP[1:].sum()
-        # FN_wo = df.da.FN[1:].sum()
+        # TP = np.diag(cm)
+        # FP = np.sum(cm, axis=0) - TP
+        # FN = np.sum(cm, axis=1) - TP
+        # TP=TP[1:]
+        # FP=FP[1:]
+        # FN=FN[1:]
+        # precision_wo = np.divide(TP,(TP+FP))
+        # recall_wo = np.divide(TP,(TP+FN))
+        # precision_wo[np.isnan(precision_wo)] = 0
+        # precision_wo[np.isinf(precision_wo)] = 0
+        # recall_wo[np.isnan(recall_wo)] = 0
+        # recall_wo[np.isinf(recall_wo)] = 0
+        # macro_rec_wo = round((recall_wo.sum()) / len(recall_wo),4)
+        # macro_pre_wo = round((precision_wo.sum()) / len(precision_wo),4)
+        # macro_f1_wo = 2 * macro_pre_wo * macro_rec_wo / (macro_rec_wo + macro_pre_wo)
+        # TP_wo = TP.sum()
+        # FP_wo = FP.sum()
+        # FN_wo = FN.sum()
         # micro_prec_wo = TP_wo / (TP_wo+FP_wo)
         # micro_reca_wo = TP_wo / (TP_wo+FN_wo)
         
         # micro_f1_wo = round(2*micro_prec_wo*micro_reca_wo / (micro_prec_wo+micro_reca_wo),4)
+        
         # ret.extend([f1, macro_pre, macro_rec, micro_f1, acc, macro_f1_wo, micro_f1_wo])
+
+        df = pd.DataFrame(cm, dtype=int)        
+        # macro and micro with all class
+        macro_rec = round((df.da.recall.sum()) / len(df.da.recall),4)
+        macro_pre = round((df.da.precision.sum()) / len(df.da.precision),4)
+        # macro_f1 = round((df.da.f1.sum()) / len(df.da.f1),4) #df.da.f1 gives f1 for each class
+        f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
+        TP = df.da.TP.sum()
+        FP = df.da.FP.sum()
+        FN = df.da.FN.sum()
+        micro_prec = TP / (TP+FP)
+        micro_reca = TP / (TP+FN)
+        micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
+        # add accuracy
+        acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
+
+        # macro and micro without neutre
+        macro_f1_wo = round(df.da.f1[1:].sum() / len(df.da.f1[1:]),4)
+        TP_wo = df.da.TP[1:].sum()
+        FP_wo = df.da.FP[1:].sum()
+        FN_wo = df.da.FN[1:].sum()
+        micro_prec_wo = TP_wo / (TP_wo+FP_wo)
+        micro_reca_wo = TP_wo / (TP_wo+FN_wo)
+        
+        micro_f1_wo = round(2*micro_prec_wo*micro_reca_wo / (micro_prec_wo+micro_reca_wo),4)
+        ret.extend([f1, macro_pre, macro_rec, micro_f1, acc, macro_f1_wo, micro_f1_wo])
 
     #@Speech act F1
     if has_act:
@@ -319,118 +321,118 @@ def cal_f1(confmat, params):
         df = pd.DataFrame(cm, dtype=int)
         # macro and micro with all class
 
-        TP = np.diag(cm)
-        FP = np.sum(cm, axis=0) - TP
-        FN = np.sum(cm, axis=1) - TP
-        precision = np.divide(TP,(TP+FP))
-        recall = np.divide(TP,(TP+FN))
-        precision[np.isnan(precision)] = 0
-        precision[np.isinf(precision)] = 0
-        recall[np.isnan(recall)] = 0
-        recall[np.isinf(recall)] = 0
-        macro_rec = round((recall.sum()) / len(recall),4)
-        macro_pre = round((precision.sum()) / len(precision),4)
-        f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
-        TP = TP.sum()
-        FP = FP.sum()
-        FN = FN.sum()
-        micro_prec = TP / (TP+FP)
-        micro_reca = TP / (TP+FN)
-        micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
-        acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
-        ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
-
-
-        # macro_f1 = round((df.da.f1.sum()) / len(df.da.f1),4) #df.da.f1 gives f1 for each class
-        # macro_rec = round((df.da.recall.sum()) / len(df.da.recall),4)
-        # macro_pre = round((df.da.precision.sum()) / len(df.da.precision),4)
+        # TP = np.diag(cm)
+        # FP = np.sum(cm, axis=0) - TP
+        # FN = np.sum(cm, axis=1) - TP
+        # precision = np.divide(TP,(TP+FP))
+        # recall = np.divide(TP,(TP+FN))
+        # precision[np.isnan(precision)] = 0
+        # precision[np.isinf(precision)] = 0
+        # recall[np.isnan(recall)] = 0
+        # recall[np.isinf(recall)] = 0
+        # macro_rec = round((recall.sum()) / len(recall),4)
+        # macro_pre = round((precision.sum()) / len(precision),4)
         # f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
-        # TP = df.da.TP.sum()
-        # FP = df.da.FP.sum()
-        # FN = df.da.FN.sum()
+        # TP = TP.sum()
+        # FP = FP.sum()
+        # FN = FN.sum()
         # micro_prec = TP / (TP+FP)
         # micro_reca = TP / (TP+FN)
         # micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
         # acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
         # ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
+
+
+        # macro_f1 = round((df.da.f1.sum()) / len(df.da.f1),4) #df.da.f1 gives f1 for each class
+        macro_rec = round((df.da.recall.sum()) / len(df.da.recall),4)
+        macro_pre = round((df.da.precision.sum()) / len(df.da.precision),4)
+        f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
+        TP = df.da.TP.sum()
+        FP = df.da.FP.sum()
+        FN = df.da.FN.sum()
+        micro_prec = TP / (TP+FP)
+        micro_reca = TP / (TP+FN)
+        micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
+        acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
+        ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
 
     #@Topic F1
     if has_topic:
         cm = np.array(cm_topic)
         df = pd.DataFrame(cm, dtype=int)
         # macro and micro with all class
-        TP = np.diag(cm)
-        FP = np.sum(cm, axis=0) - TP
-        FN = np.sum(cm, axis=1) - TP
-        precision = np.divide(TP,(TP+FP))
-        recall = np.divide(TP,(TP+FN))
-        precision[np.isnan(precision)] = 0
-        precision[np.isinf(precision)] = 0
-        recall[np.isnan(recall)] = 0
-        recall[np.isinf(recall)] = 0
-        macro_rec = round((recall.sum()) / len(recall),4)
-        macro_pre = round((precision.sum()) / len(precision),4)
-        f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
-        TP = TP.sum()
-        FP = FP.sum()
-        FN = FN.sum()
-        micro_prec = TP / (TP+FP)
-        micro_reca = TP / (TP+FN)
-        micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
-        acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
-        ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
-
-        # macro_f1 = round((df.da.f1.sum()) / len(df.da.f1),4) #df.da.f1 gives f1 for each class
-        # macro_rec = round((df.da.recall.sum()) / len(df.da.recall),4)
-        # macro_pre = round((df.da.precision.sum()) / len(df.da.precision),4)
+        # TP = np.diag(cm)
+        # FP = np.sum(cm, axis=0) - TP
+        # FN = np.sum(cm, axis=1) - TP
+        # precision = np.divide(TP,(TP+FP))
+        # recall = np.divide(TP,(TP+FN))
+        # precision[np.isnan(precision)] = 0
+        # precision[np.isinf(precision)] = 0
+        # recall[np.isnan(recall)] = 0
+        # recall[np.isinf(recall)] = 0
+        # macro_rec = round((recall.sum()) / len(recall),4)
+        # macro_pre = round((precision.sum()) / len(precision),4)
         # f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
-        # TP = df.da.TP.sum()
-        # FP = df.da.FP.sum()
-        # FN = df.da.FN.sum()
+        # TP = TP.sum()
+        # FP = FP.sum()
+        # FN = FN.sum()
         # micro_prec = TP / (TP+FP)
         # micro_reca = TP / (TP+FN)
         # micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
         # acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
         # ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
+
+        # macro_f1 = round((df.da.f1.sum()) / len(df.da.f1),4) #df.da.f1 gives f1 for each class
+        macro_rec = round((df.da.recall.sum()) / len(df.da.recall),4)
+        macro_pre = round((df.da.precision.sum()) / len(df.da.precision),4)
+        f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
+        TP = df.da.TP.sum()
+        FP = df.da.FP.sum()
+        FN = df.da.FN.sum()
+        micro_prec = TP / (TP+FP)
+        micro_reca = TP / (TP+FN)
+        micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
+        acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
+        ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
 
     #@PHQ-9 F1
     if has_phq:
         cm = np.array(cm_phq)
         df = pd.DataFrame(cm, dtype=int)
         # macro and micro with all class
-        TP = np.diag(cm)
-        FP = np.sum(cm, axis=0) - TP
-        FN = np.sum(cm, axis=1) - TP
-        precision = np.divide(TP,(TP+FP))
-        recall = np.divide(TP,(TP+FN))
-        precision[np.isnan(precision)] = 0
-        precision[np.isinf(precision)] = 0
-        recall[np.isnan(recall)] = 0
-        recall[np.isinf(recall)] = 0
-        macro_rec = round((recall.sum()) / len(recall),4)
-        macro_pre = round((precision.sum()) / len(precision),4)
-        f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
-        TP = TP.sum()
-        FP = FP.sum()
-        FN = FN.sum()
-        micro_prec = TP / (TP+FP)
-        micro_reca = TP / (TP+FN)
-        micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
-        acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
-        ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
-
-        # macro_f1 = round((df.da.f1.sum()) / len(df.da.f1),4) #df.da.f1 gives f1 for each class
-        # macro_rec = round((df.da.recall.sum()) / len(df.da.recall),4)
-        # macro_pre = round((df.da.precision.sum()) / len(df.da.precision),4)
+        # TP = np.diag(cm)
+        # FP = np.sum(cm, axis=0) - TP
+        # FN = np.sum(cm, axis=1) - TP
+        # precision = np.divide(TP,(TP+FP))
+        # recall = np.divide(TP,(TP+FN))
+        # precision[np.isnan(precision)] = 0
+        # precision[np.isinf(precision)] = 0
+        # recall[np.isnan(recall)] = 0
+        # recall[np.isinf(recall)] = 0
+        # macro_rec = round((recall.sum()) / len(recall),4)
+        # macro_pre = round((precision.sum()) / len(precision),4)
         # f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
-        # TP = df.da.TP.sum()
-        # FP = df.da.FP.sum()
-        # FN = df.da.FN.sum()
+        # TP = TP.sum()
+        # FP = FP.sum()
+        # FN = FN.sum()
         # micro_prec = TP / (TP+FP)
         # micro_reca = TP / (TP+FN)
         # micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
         # acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
         # ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
+
+        # macro_f1 = round((df.da.f1.sum()) / len(df.da.f1),4) #df.da.f1 gives f1 for each class
+        macro_rec = round((df.da.recall.sum()) / len(df.da.recall),4)
+        macro_pre = round((df.da.precision.sum()) / len(df.da.precision),4)
+        f1 = 2 * macro_pre * macro_rec / (macro_rec + macro_pre)
+        TP = df.da.TP.sum()
+        FP = df.da.FP.sum()
+        FN = df.da.FN.sum()
+        micro_prec = TP / (TP+FP)
+        micro_reca = TP / (TP+FN)
+        micro_f1 = round(2*micro_prec*micro_reca / (micro_prec+micro_reca),4)
+        acc = round(sum([df[i][i] for i in range(len(df))]) / df.to_numpy().sum(), 4)
+        ret.extend([f1, macro_pre, macro_rec, micro_f1, acc])
     return ret
     
 
