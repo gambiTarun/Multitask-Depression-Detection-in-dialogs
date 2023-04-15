@@ -57,7 +57,7 @@ class DialogReader(DatasetReader):
         self.has_topic = params['has_topic']
         self.has_phq = params['has_phq']
         self.has_phqbi = params['has_phqbi']
-        self.daic_or_erisk = 'erisk'
+        # self.daic_or_erisk = 'erisk'
         # multilingual model, similar embeddings as the bert-base-nli-stsb-mean-token model, trained on 50+ lang
         self.turn_encoder = SentenceTransformer('stsb-xlm-r-multilingual') if self.encode_turns else None
         if params['orig_separation']:
@@ -151,7 +151,7 @@ class DialogReader(DatasetReader):
         list_final = []
         for label, classify in zip(subject_labels, dep_labels):
             final_seq,final_user=[],[]
-            for i in range(1,2):
+            for i in range(1,11):
                 folder='chunk'+str(i)
                 subject_name=label+'_'+str(i)
                 final_folder=ERISK_DIR+folder+'/'+subject_name+'.xml'
@@ -173,12 +173,15 @@ class DialogReader(DatasetReader):
                     if texts==' ':
                         continue
                     seq.append(texts)
-                    user.append(label)
-                final_seq.extend(seq)
-                final_user.extend(user)
-            if final_seq==[]:
-                continue
-            list_final.append([final_seq,final_user,[classify]])
+                    user.append(subject_name)
+                if seq==[]:
+                    continue
+                list_final.append([seq,user,[classify]])
+            #     final_seq.extend(seq)
+            #     final_user.extend(user)
+            # if final_seq==[]:
+            #     continue
+            # list_final.append([final_seq,final_user,[classify]])
 
         # train_idx = int(len(list_final)*0.6)
         # dev_idx = int(len(list_final)*0.8)
